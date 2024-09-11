@@ -14,7 +14,7 @@ interface IProps {
  * Perspective library adds load to HTMLElement prototype.
  * This interface acts as a wrapper for Typescript compiler.
  */
-interface PerspectiveViewerElement {
+interface PerspectiveViewerElement extends HTMLElement{
   load: (table: Table) => void,
 }
 
@@ -32,7 +32,7 @@ class Graph extends Component<IProps, {}> {
 
   componentDidMount() {
     // Get element to attach the table from the DOM.
-    const elem: PerspectiveViewerElement = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
+    const elem = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
 
     const schema = {
       stock: 'string',
@@ -49,6 +49,17 @@ class Graph extends Component<IProps, {}> {
 
       // Add more Perspective configurations here.
       elem.load(this.table);
+      // Add more Perspective configurations here based on the image instructions.
+      elem.setAttribute('view', 'y_line');  // Set the view type to 'y_line'.
+      elem.setAttribute('column-pivots', '["stock"]');  // Set column pivots to group by 'stock'.
+      elem.setAttribute('row-pivots', '["timestamp"]');  // Set row pivots to group by 'timestamp'.
+      elem.setAttribute('columns', '["top_ask_price"]');  // Specify columns to display, such as 'top_ask_price'.
+      elem.setAttribute('aggregates', JSON.stringify({
+        "stock": "distinct count",       // Aggregate 'stock' by distinct count.
+        "top_ask_price": "avg",          // Aggregate 'top_ask_price' by average.
+        "top_bid_price": "avg",          // Aggregate 'top_bid_price' by average.
+        "timestamp": "distinct count"    // Aggregate 'timestamp' by distinct count.
+      }));
     }
   }
 
